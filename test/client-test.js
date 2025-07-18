@@ -3,32 +3,34 @@ const socket = io('http://localhost:3000', {
   transports: ['websocket']
 });
 
+const username ='Razan';
+const roomName ='room1';
+
 socket.on('connect', () => {
   console.log('Connected as:', socket.id);
-  socket.emit('new-user', 'Razan');
+  socket.emit('new-user', username);
+  socket.emit('join-room', { username, roomName });
   setTimeout(() => {
-    socket.emit('send-chat-message', 'Hello from Razan');
+    socket.emit('send-chat-message', {
+      roomName,
+      message: `Hello from ${username}`
+    });
   }, 2000);
 });
 
-socket.emit('join-room', { username: 'Razan', roomName: 'room1' });
-
-socket.emit('send-chat-message', { roomName: 'room1', message: 'Hello!' });
-
 socket.on('chat-message', (data) => {
-  console.log(`${data.username} : ${data.text}`);
+  console.log(`${data.username}: ${data.text}`);
 });
 
 socket.on('user-connected', (username) => {
   console.log(`${username} joined`);
 });
 
-
 socket.on('user-disconnected', (username) => {
   console.log(`${username} left`);
 });
 
 setTimeout(() => {
-console.log('disconnecting');
-socket.disconnect();
+  console.log('Disconnecting...');
+  socket.disconnect();
 }, 10000);
