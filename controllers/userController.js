@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Room=require('../models/roomModel');
 
 exports.newUser = async (socket, io, username) => {
     const user = new User({ username, socketId: socket.id });
@@ -6,15 +7,15 @@ exports.newUser = async (socket, io, username) => {
     socket.broadcast.emit('user-connected', username);
 };
 
-exports.sendMessage = async (socket, io, message) => {
-    const user = await User.findOne({ socketId: socket.id });
-    if (user) {
-      socket.broadcast.emit('chat-message', {
-        username: user.username,
-        text: message
-      });
-    }
-  };
+exports.sendMessage = async (socket, io, { roomName, message }) => {
+  const user = await User.findOne({ socketId: socket.id });
+  if (user) {
+    io.to(roomName).emit('chat-message', {
+      username: user.username,
+      text: message
+    });
+  }
+};
 
 exports.disconnect = async (socket, io) => {
   try {
@@ -23,6 +24,6 @@ exports.disconnect = async (socket, io) => {
       socket.broadcast.emit('user-disconnected', user.username);
     }
   } catch (err) {
-    console.error('❌ Error in disconnect:', err);
+    console.error('Error in disconnect:', err);
   }
 };

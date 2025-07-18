@@ -11,13 +11,18 @@ socket.on('connect', () => {
   }, 2000);
 });
 
+socket.emit('join-room', { username: 'Razan', roomName: 'room1' });
+
+socket.emit('send-chat-message', { roomName: 'room1', message: 'Hello!' });
+
 socket.on('chat-message', (data) => {
-  console.log(`[${data.username}]: ${data.text}`);
+  console.log(`${data.username} : ${data.text}`);
 });
 
 socket.on('user-connected', (username) => {
   console.log(`${username} joined`);
 });
+
 
 socket.on('user-disconnected', (username) => {
   console.log(`${username} left`);
