@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../models/userModel');
 
 exports.newUser = async (socket, io, username) => {
     const user = new User({ username, socketId: socket.id });
